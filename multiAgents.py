@@ -73,54 +73,40 @@ class ReflexAgent(Agent):
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-        newGhostPos = successorGameState.getGhostPositions()
+        
         "*** YOUR CODE HERE ***"
-        """
-        print "~~~newPos~~~~"
-        print newPos
-        """
-        #print "~~~~newFood~~~~~"
-        
-        """
-        #print "~~~~newGhostStates~~~~"
-        #print newGhostStates
-        #print "~~~"
-        #print newGhostPos
-        
-        #print "newPos: %s" % newPos[0]
 
-        #print newPos[0]
-        #print newGhostPos[0]
-        foodcount = 0
-        for row in newFood:
-          for item in row: 
-            if item: 
-              #print item
-              foodcount +=1
+        if action == Directions.STOP: 
+          return -9999
         """
         foodpos = newFood.asList()
         foodcount = successorGameState.getNumFood()
+
+        #min distance from food
         minfooddist = 99999999
         for coord in foodpos:
           fooddist =  manhattanDistance(newPos, coord)
           if minfooddist > fooddist:
             minfooddist = fooddist
-        #print minfooddist
-        #pacx = newPos[0]
-        #pacy = newPos[1]
-        #ghostdist = newGhostPos[0][0] - pacx + newGhostPos[0][1] - pacy
-        minghost = 9999999
+
+        #min distance from ghost
+        minghost = 999999
         for ghost in newGhostStates: 
-          #print ghost
-          ghostdist = manhattanDistance(newPos, newGhostPos[0])
+          #print ghost.getPosition()
+          ghostdist = manhattanDistance(newPos, ghost.getPosition())
           if ghostdist < minghost:
             minghost = ghostdist
         #print minghost
         #if ghostdist <3: 
-        #  ghostdist = -ghostdist 
-        score = -1/2 * foodcount + (1/10) *minghost + 1/(minfooddist+1)
-        #return successorGameState.getScore()
-        return score 
+        #  ghostdist = -ghostdist
+        "(-foodcount/2)+ (1/10) *minghost+ 1/(minfooddist+1)"
+        #print "minfood: %s" % minfooddist
+        score = 100/(minfooddist+1)
+        #print score
+        """
+        score1 =  successorGameState.getScore()
+        return score1
+        #return score 
 
 def scoreEvaluationFunction(currentGameState):
     """
