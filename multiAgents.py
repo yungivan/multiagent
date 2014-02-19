@@ -73,9 +73,54 @@ class ReflexAgent(Agent):
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-
+        newGhostPos = successorGameState.getGhostPositions()
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        """
+        print "~~~newPos~~~~"
+        print newPos
+        """
+        #print "~~~~newFood~~~~~"
+        
+        """
+        #print "~~~~newGhostStates~~~~"
+        #print newGhostStates
+        #print "~~~"
+        #print newGhostPos
+        
+        #print "newPos: %s" % newPos[0]
+
+        #print newPos[0]
+        #print newGhostPos[0]
+        foodcount = 0
+        for row in newFood:
+          for item in row: 
+            if item: 
+              #print item
+              foodcount +=1
+        """
+        foodpos = newFood.asList()
+        foodcount = successorGameState.getNumFood()
+        minfooddist = 99999999
+        for coord in foodpos:
+          fooddist =  manhattanDistance(newPos, coord)
+          if minfooddist > fooddist:
+            minfooddist = fooddist
+        #print minfooddist
+        #pacx = newPos[0]
+        #pacy = newPos[1]
+        #ghostdist = newGhostPos[0][0] - pacx + newGhostPos[0][1] - pacy
+        minghost = 9999999
+        for ghost in newGhostStates: 
+          #print ghost
+          ghostdist = manhattanDistance(newPos, newGhostPos[0])
+          if ghostdist < minghost:
+            minghost = ghostdist
+        #print minghost
+        #if ghostdist <3: 
+        #  ghostdist = -ghostdist 
+        score = -1/2 * foodcount + (1/10) *minghost + 1/(minfooddist+1)
+        #return successorGameState.getScore()
+        return score 
 
 def scoreEvaluationFunction(currentGameState):
     """
