@@ -227,7 +227,59 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        self.pcount = gameState.getNumAgents()
+        if self.depth == 0:
+            return float('inf')
+        
+        optmove = Directions.STOP
+        v = float('-inf')
+        actions = gameState.getLegalActions(0)
+        if actions == []:
+            return self.evaluationFunction(agentIndex)
+        for move in actions: 
+            successor = gameState.generateSuccessor(0, move)
+            tmp =  self.minhelper(successor, 1, self.depth)
+            if tmp >= v:
+                optmove = move
+                v = tmp
+        return optmove
+
+    def maxhelper(self, gameState, depth):
+        
+        if depth == 0:
+            return self.evaluationFunction(gameState)
+
+        maxnum = float('-inf')
+        actions = gameState.getLegalActions(0)
+        if actions == []:
+            return self.evaluationFunction(gameState)
+
+        for move in actions: 
+            successor = gameState.generateSuccessor(0, move)
+            tmp = self.minhelper(successor, 1,depth)
+            #print tmp
+            maxnum = max(tmp, maxnum)
+            
+        return maxnum
+
+    def minhelper(self, gameState, agentIndex, depth):
+        
+        if depth ==0:
+            return self.evaluationFunction(gameState)
+
+        minnum = float('inf')
+        actions = gameState.getLegalActions(agentIndex)
+        if actions == []:
+            return self.evaluationFunction(gameState)
+    
+        for move in actions:
+            successor = gameState.generateSuccessor(agentIndex, move)
+            if agentIndex == self.pcount -1 :
+                tmp = self.maxhelper(successor, depth-1)
+            else: 
+                tmp = self.minhelper(successor, agentIndex+1, depth)
+            minnum = min(minnum, tmp)
+        return minnum
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
@@ -242,7 +294,67 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        self.pcount = gameState.getNumAgents()
+        if self.depth == 0:
+            return float('inf')
+        
+        optmove = Directions.STOP
+        v = float('-inf')
+        actions = gameState.getLegalActions(0)
+        if actions == []:
+            return self.evaluationFunction(agentIndex)
+        for move in actions: 
+            successor = gameState.generateSuccessor(0, move)
+            tmp =  self.minhelper(successor, 1, self.depth)
+            if tmp > v:
+                optmove = move
+                v = tmp
+        return optmove
+
+    def maxhelper(self, gameState, depth):
+        
+        if depth == 0:
+            return self.evaluationFunction(gameState)
+
+        maxnum = float('-inf')
+        actions = gameState.getLegalActions(0)
+        if actions == []:
+            return self.evaluationFunction(gameState)
+        #sumnum = 0
+        #countnum = 0
+        for move in actions: 
+            successor = gameState.generateSuccessor(0, move)
+            tmp = self.minhelper(successor, 1,depth)
+            #sumnum += tmp
+            #countnum += 1
+            #print tmp
+            maxnum = max(tmp, maxnum)
+            
+        return maxnum
+        #sumnum/countnum
+
+    def minhelper(self, gameState, agentIndex, depth):
+        
+        if depth ==0:
+            return self.evaluationFunction(gameState)
+
+        minnum = float('inf')
+        actions = gameState.getLegalActions(agentIndex)
+        if actions == []:
+            return self.evaluationFunction(gameState)
+        sumnum = 0
+        countnum = 0
+        for move in actions:
+            successor = gameState.generateSuccessor(agentIndex, move)
+            if agentIndex == self.pcount -1 :
+                tmp = self.maxhelper(successor, depth-1)
+            else: 
+                tmp = self.minhelper(successor, agentIndex+1, depth)
+            sumnum += tmp
+            countnum += 1
+            #minnum = min(minnum, tmp)
+
+        return sumnum/countnum
 
 def betterEvaluationFunction(currentGameState):
     """
