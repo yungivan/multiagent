@@ -191,7 +191,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
             return self.evaluationFunction(gameState)
         maxnum = float('-inf')
         
-        actions = gameState.getLegalActions(agentIndex)
+        actions = gameState.getLegalActions(0)
         if actions == []:
             return self.evaluationFunction(gameState)
         for move in actions: 
@@ -214,10 +214,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
         
         for move in actions:
             successor = gameState.generateSuccessor(agentIndex, move)
-            if agentIndex != 0:
-                tmp = self.minhelper(successor, agentIndex+1, depth)
-            else: 
+            if agentIndex == self.pcount -1 :
                 tmp = self.maxhelper(successor, depth-1)
+                
+            else: 
+                tmp = self.minhelper(successor, agentIndex+1, depth)
             minnum = min(minnum, tmp)
         return minnum
 
