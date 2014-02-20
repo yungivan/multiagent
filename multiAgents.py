@@ -104,8 +104,8 @@ class ReflexAgent(Agent):
         score = 100/(minfooddist+1)
         #print score
         """
-        score1 =  successorGameState.getScore()
-        return score1
+        score =  successorGameState.getScore()
+        return score
         #return score 
 
 def scoreEvaluationFunction(currentGameState):
@@ -179,21 +179,16 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 v = tmp
         return optmove
 
-    """
-    Recurses and finds the max of the mins given. 
-
-    Returns cost and move
-    """
     def maxhelper(self, gameState, depth):
         
         if depth == 0:
-            #print "time to return!"
             return self.evaluationFunction(gameState)
+
         maxnum = float('-inf')
-        
         actions = gameState.getLegalActions(0)
         if actions == []:
             return self.evaluationFunction(gameState)
+
         for move in actions: 
             successor = gameState.generateSuccessor(0, move)
             tmp = self.minhelper(successor, 1,depth)
@@ -211,12 +206,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
         actions = gameState.getLegalActions(agentIndex)
         if actions == []:
             return self.evaluationFunction(gameState)
-        
+    
         for move in actions:
             successor = gameState.generateSuccessor(agentIndex, move)
             if agentIndex == self.pcount -1 :
                 tmp = self.maxhelper(successor, depth-1)
-                
             else: 
                 tmp = self.minhelper(successor, agentIndex+1, depth)
             minnum = min(minnum, tmp)
