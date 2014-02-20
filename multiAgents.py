@@ -161,64 +161,65 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        #util.raiseNotDefined()
+     
         self.pcount = gameState.getNumAgents()
-
         if self.depth == 0:
             return float('inf')
-        #moves = gameState.getLegalActions(agentIndex)
-        v, move = self.maxhelper(gameState, 0, [], self.depth)
-        return move
-
-        #for i in range(0, self.depth):
-            #for agentIndex in range(0, pcount-1):
-        #for move in moves:
-        #    val = self.minhelper(0, move, self.depth)
+        
+        optmove = Directions.STOP
+        v = float('-inf')
+        actions = gameState.getLegalActions(0)
+        if actions == []:
+            return self.evaluationFunction(agentIndex)
+        for move in actions: 
+            successor = gameState.generateSuccessor(0, move)
+            tmp =  self.minhelper(successor, 1, self.depth)
+            if tmp >= v:
+                optmove = move
+                v = tmp
+        return optmove
 
     """
     Recurses and finds the max of the mins given. 
 
     Returns cost and move
     """
-    def maxhelper(self, gameState, agentIndex, move, depth):
+    def maxhelper(self, gameState, depth):
+        
         if depth == 0:
-            return (0, move)
-        #initialize
-        v = float('-inf')
-        if move == []:
-            moves = gameState.getLegalActions(agentIndex)
-        else: 
+            #print "time to return!"
+            return self.evaluationFunction(gameState)
+        maxnum = float('-inf')
+        
+        actions = gameState.getLegalActions(agentIndex)
+        if actions == []:
+            return self.evaluationFunction(gameState)
+        for move in actions: 
+            successor = gameState.generateSuccessor(0, move)
+            tmp = self.minhelper(successor, 1,depth)
+            #print tmp
+            maxnum = max(tmp, maxnum)
+            
+        return maxnum
+
+    def minhelper(self, gameState, agentIndex, depth):
+        
+        if depth ==0:
+            return self.evaluationFunction(gameState)
+
+        minnum = float('inf')
+        actions = gameState.getLegalActions(agentIndex)
+        if actions == []:
+            return self.evaluationFunction(gameState)
+        
+        for move in actions:
             successor = gameState.generateSuccessor(agentIndex, move)
-            moves = successor.getLegalActions(agentIndex)
-
-        for move in moves: 
-            tmp = v
-            v = max(v, self.minhelper(gameState, agentIndex+1, move, depth)[0])
-            if tmp != v:
-                optmove = move
-        return (v, optmove)
-
-    def minhelper(self, gameState, agentIndex, move, depth):
-        if agentIndex == self.pcount +1:
-            return self.maxhelper(gameState, self.pcount, move, depth-1)
-        v = float('inf')
-
-        successor = gameState.generateSuccessor(agentIndex, move)
-        moves = successor.getLegalActions(agentIndex)
-        print "~~~~~~moves~~~~~"
-        print moves
-        print "~~~~~~~~~~~~~~"
-        for move in moves:
-            tmp = v
-            v = min(v, self.minhelper(gameState, agentIndex+1, move, depth)[0])
-            if tmp != v:
-                optmove = move
-        return (v, optmove)
-
-
-
-
-
+            if agentIndex != 0:
+                tmp = self.minhelper(successor, agentIndex+1, depth)
+            else: 
+                tmp = self.maxhelper(successor, depth-1)
+            minnum = min(minnum, tmp)
+        return minnum
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
