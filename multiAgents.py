@@ -78,7 +78,7 @@ class ReflexAgent(Agent):
 
         if action == Directions.STOP: 
           return -9999
-        """
+        
         foodpos = newFood.asList()
         foodcount = successorGameState.getNumFood()
 
@@ -92,20 +92,12 @@ class ReflexAgent(Agent):
         #min distance from ghost
         minghost = 999999
         for ghost in newGhostStates: 
-          #print ghost.getPosition()
           ghostdist = manhattanDistance(newPos, ghost.getPosition())
-          if ghostdist < minghost:
-            minghost = ghostdist
-        #print minghost
-        #if ghostdist <3: 
-        #  ghostdist = -ghostdist
-        "(-foodcount/2)+ (1/10) *minghost+ 1/(minfooddist+1)"
-        #print "minfood: %s" % minfooddist
-        score = 100/(minfooddist+1)
-        #print score
-        """
-        score =  successorGameState.getScore()
-        return score
+          minghost = min(minghost, ghostdist)
+        if minghost <2:
+            return float('-inf')
+
+        return successorGameState.getScore() + 10/(minfooddist+1) - 100 * foodcount
         #return score 
 
 def scoreEvaluationFunction(currentGameState):
@@ -166,7 +158,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         if self.depth == 0:
             return float('inf')
         
-        optmove = Directions.STOP
+        #optmove = Directions.STOP
         v = float('-inf')
         actions = gameState.getLegalActions(0)
         if actions == []:
@@ -364,7 +356,13 @@ def betterEvaluationFunction(currentGameState):
       DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    
+    successorGameState = currentGameState.generatePacmanSuccessor(action)
+    if action == Directions.STOP: 
+          return -9999
+    score =  successorGameState.getScore()
+    return score
+    #util.raiseNotDefined()
 
 # Abbreviation
 better = betterEvaluationFunction
