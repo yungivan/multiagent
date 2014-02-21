@@ -367,21 +367,21 @@ def betterEvaluationFunction(currentGameState):
       DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    action = currentGameState.getLegalActions(0)
-    if action == []:
-        return float('-inf')
+    #action = currentGameState.getLegalActions(0)
+    #if action == []:
+    #    return float('-inf')
      
-    successorGameState = currentGameState.generatePacmanSuccessor(action[0])
-    newPos = successorGameState.getPacmanPosition()
-    newFood = successorGameState.getFood()
-    newGhostStates = successorGameState.getGhostStates()
+    
+    newPos = currentGameState.getPacmanPosition()
+    newFood = currentGameState.getFood()
+    newGhostStates = currentGameState.getGhostStates()
     newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
         
-    if action == Directions.STOP: 
-        return -9999
+    #if action == Directions.STOP: 
+    #    return -9999
         
     foodpos = newFood.asList()
-    foodcount = successorGameState.getNumFood()
+    foodcount = currentGameState.getNumFood()
 
     #min distance from food
     minfooddist = 99999999
@@ -398,7 +398,7 @@ def betterEvaluationFunction(currentGameState):
     if minghost <2:
         return float('-inf')
 
-    return successorGameState.getScore() + 10/(minfooddist+1) - 100 * foodcount
+    return currentGameState.getScore() + 10/(minfooddist+1) - 100 * foodcount
 
 # Abbreviation
 better = betterEvaluationFunction
