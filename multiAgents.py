@@ -219,6 +219,8 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
+        alpha = float('-inf')
+        beta = float('inf')
         self.pcount = gameState.getNumAgents()
         if self.depth == 0:
             return float('inf')
@@ -230,13 +232,16 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             return self.evaluationFunction(agentIndex)
         for move in actions: 
             successor = gameState.generateSuccessor(0, move)
-            tmp =  self.minhelper(successor, 1, self.depth)
+            tmp =  self.minhelper(successor, 1, self.depth, alpha, beta)
             if tmp >= v:
                 optmove = move
                 v = tmp
+            if v > beta:
+                return v
+            alpha = max(alpha, v)
         return optmove
 
-    def maxhelper(self, gameState, depth):
+    def maxhelper(self, gameState, depth, alpha, beta):
         
         if depth == 0:
             return self.evaluationFunction(gameState)
@@ -248,13 +253,16 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
         for move in actions: 
             successor = gameState.generateSuccessor(0, move)
-            tmp = self.minhelper(successor, 1,depth)
+            tmp = self.minhelper(successor, 1,depth, alpha, beta)
             #print tmp
             maxnum = max(tmp, maxnum)
+            if maxnum > beta: 
+                return maxnum
+            alpha = max(alpha, maxnum)
             
         return maxnum
 
-    def minhelper(self, gameState, agentIndex, depth):
+    def minhelper(self, gameState, agentIndex, depth, alpha, beta):
         
         if depth ==0:
             return self.evaluationFunction(gameState)
@@ -267,10 +275,13 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         for move in actions:
             successor = gameState.generateSuccessor(agentIndex, move)
             if agentIndex == self.pcount -1 :
-                tmp = self.maxhelper(successor, depth-1)
+                tmp = self.maxhelper(successor, depth-1, alpha, beta)
             else: 
-                tmp = self.minhelper(successor, agentIndex+1, depth)
+                tmp = self.minhelper(successor, agentIndex+1, depth, alpha, beta)
             minnum = min(minnum, tmp)
+            if minnum < alpha:
+                return minnum
+            beta = min(beta, minnum)
         return minnum
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
@@ -356,14 +367,38 @@ def betterEvaluationFunction(currentGameState):
       DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    
-    successorGameState = currentGameState.generatePacmanSuccessor(action)
+    action = currentGameState.getLegalActions(0)
+    if action == []:
+        return float('-inf')
+     
+    successorGameState = currentGameState.generatePacmanSuccessor(action[0])
+    newPos = successorGameState.getPacmanPosition()
+    newFood = successorGameState.getFood()
+    newGhostStates = successorGameState.getGhostStates()
+    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+        
     if action == Directions.STOP: 
-          return -9999
-    score =  successorGameState.getScore()
-    return score
-    #util.raiseNotDefined()
+        return -9999
+        
+    foodpos = newFood.asList()
+    foodcount = successorGameState.getNumFood()
+
+    #min distance from food
+    minfooddist = 99999999
+    for coord in foodpos:
+        fooddist =  manhattanDistance(newPos, coord)
+        if minfooddist > fooddist:
+            minfooddist = fooddist
+
+    #min distance from ghost
+    minghost = 999999
+    for ghost in newGhostStates: 
+        ghostdist = manhattanDistance(newPos, ghost.getPosition())
+        minghost = min(minghost, ghostdist)
+    if minghost <2:
+        return float('-inf')
+
+    return successorGameState.getScore() + 10/(minfooddist+1) - 100 * foodcount
 
 # Abbreviation
 better = betterEvaluationFunction
-
