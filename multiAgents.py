@@ -76,8 +76,6 @@ class ReflexAgent(Agent):
         
         "*** YOUR CODE HERE ***"
 
-        if action == Directions.STOP: 
-          return -9999
         
         foodpos = newFood.asList()
         foodcount = successorGameState.getNumFood()
@@ -376,29 +374,52 @@ def betterEvaluationFunction(currentGameState):
     newFood = currentGameState.getFood()
     newGhostStates = currentGameState.getGhostStates()
     newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-        
+    #print newGhostStates
+    #print "~~~~~~~~~"
+    #print newScaredTimes
+    #print "~~~"
     #if action == Directions.STOP: 
     #    return -9999
+    
+    newScaredTimesAndPositions = [(ghostState.scaredTimer, ghostState.getPosition()) for ghostState in newGhostStates]
+    distance = float('inf')
+    for ghostState in newScaredTimesAndPositions:
+        ghostTime, ghostPosition = ghostState
+        newDistance = manhattanDistance(ghostPosition, newPos)
+        if distance > newDistance:
+            isScared = ghostTime
+            distance = newDistance
+
+    if isScared > 2 and distance < 10:
+        scareghost = 200 + distance
+
+    elif distance <= 2:
+        scareghost =  -20
+    elif distance <= 1:
+        scareghost =  -100
+    else:
+        scareghost = distance
+
         
+
     foodpos = newFood.asList()
     foodcount = currentGameState.getNumFood()
 
     #min distance from food
-    minfooddist = 99999999
+    minfooddist = float('inf')
     for coord in foodpos:
         fooddist =  manhattanDistance(newPos, coord)
-        if minfooddist > fooddist:
-            minfooddist = fooddist
+        minfooddist = min(minfooddist, fooddist)
 
     #min distance from ghost
-    minghost = 999999
+    minghost = float('inf')
     for ghost in newGhostStates: 
         ghostdist = manhattanDistance(newPos, ghost.getPosition())
         minghost = min(minghost, ghostdist)
     if minghost <2:
         return float('-inf')
 
-    return currentGameState.getScore() + 10/(minfooddist+1) - 100 * foodcount
+    return currentGameState.getScore() + 10/(minfooddist+1) - 100 * foodcount + scareghost/10
 
 # Abbreviation
 better = betterEvaluationFunction
